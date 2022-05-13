@@ -1,7 +1,7 @@
 from flask import Blueprint, Response, abort, jsonify, request
 from database import db
-import json
 from bson.objectid import ObjectId
+from pymongo import ReturnDocument
 
 menu = Blueprint("menu", __name__)
 restaurant_db = db.restaurant
@@ -28,8 +28,5 @@ def post_menu(id):
             udpated_items.append({"name": item.get("name"), "price": item.get("price")})
     resp = menu_db.find_one_and_update({"restaurant_id": ObjectId(id)}, {"$set": {
         "items": udpated_items
-    }})
-    # print("rep ===", resp["_id"])
-    # for k, v in resp.items():
-        # print("k ", k, " v ", v)
+    }}, return_document=ReturnDocument.AFTER)
     return {"_id": str(resp["_id"]), "items": resp["items"]}, 200
